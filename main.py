@@ -1,34 +1,55 @@
 import pandas as pd
 import random
+import math
 
 d = {
-    'aktie1': [0.1, 0.2, 0.15, 0.16, 0.3, 0.05, 0.1, 0.2],
-    'aktie2': [0.3, 0.1, 0.2, 0.13, 0.5, 0.01, 0.25, 0.11],
-    'aktie3': [0.3, 0.1, 0.2, 0.13, 0.5, 0.01, 0.25, 0.11],
-    'aktie4': [0.3, 0.1, 0.2, 0.13, 0.5, 0.01, 0.25, 0.11],
-    'aktie5': [0.3, 0.1, 0.2, 0.13, 0.5, 0.01, 0.25, 0.11],
-    'aktie6': [0.3, 0.1, 0.2, 0.13, 0.5, 0.01, 0.25, 0.11],
-    'aktie7': [0.3, 0.1, 0.2, 0.13, 0.5, 0.01, 0.25, 0.11],
-    'aktie8': [0.3, 0.1, 0.2, 0.13, 0.5, 0.01, 0.25, 0.11],
-    'aktie9': [0.3, 0.1, 0.2, 0.13, 0.5, 0.01, 0.25, 0.11],
-    'aktie10': [0.3, 0.1, 0.2, 0.13, 0.5, 0.01, 0.25, 0.11],
+    0: {
+        'aktie1': 0.1,
+        'aktie3': 0.3,
+        'aktie4': 0.3,
+        'aktie5': 0.3,
+        'aktie6': 0.3,
+        'aktie7': 0.3,
+        'aktie8': 0.3
+    },
+    1: {
+        'aktie1': 0.1,
+        'aktie3': 0.2,
+        'aktie4': 0.3,
+        'aktie7': 0.4,
+        'aktie9': 0.6,
+        'aktie11': 0.7,
+        'aktie12': 0.8
+    },
+    2: {
+        'aktie4': 0.1,
+        'aktie6': 0.2,
+        'aktie7': 0.3,
+        'aktie8': 0.4,
+        'aktie9': 0.6,
+        'aktie10': 0.7,
+        'aktie15': 0.8
+    }
 }
+
 df = pd.DataFrame(data=d)
+used_stocks = []
 
-selected_stocks = {}
-stocks = df.columns
-used_stock = []
+def get_random_stock(period):
+    n = random.randint(0, len(period.index.tolist())-1)
+    stocks = period.index.tolist()
+    stock_name = stocks[n]
+    random_stock = period[stock_name]
 
-def get_random_stock():
-    n = random.randint(0, df.columns.size-1)
-    if n in used_stock:
-        return get_random_stock()
-    used_stock.append(n)
-    return n
+    if math.isnan(random_stock) or stock_name in used_stocks:
+        return get_random_stock(period)
 
-for i in range(1, 8):
-    random_stock = stocks[get_random_stock()]
-    random_stock_in_period = df[random_stock][i]
-    selected_stocks[random_stock] = random_stock_in_period
+    used_stocks.append(stock_name)
 
-print(selected_stocks)
+    return {
+        'stock': stock_name,
+        'value': random_stock
+    }
+
+for i in range(0, 3):
+    print(get_random_stock(df[i]))
