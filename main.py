@@ -48,10 +48,11 @@ def get_random_stock(period):
 
     return {
         'stock': stock_name,
-        'value': random_stock
+        'value': 50000
     }
 
 chosen_stocks = []
+
 for i in range(0, 3):
     print('Period', i)
     random_stock = get_random_stock(df[i])
@@ -63,11 +64,12 @@ for i in range(0, 3):
 
         stock_return = 1
         for p in range(0, len(chosen_stocks)):
-            stock_return = round((1 + d[p][name]) * stock_return, 2)
+            stock_return = (1 + d[p][name]) * stock_return
 
         computed_stocks = {
             'name': name,
-            'returns': stock_return
+            'returns': stock_return,
+            'value': stock_return * stock['value']
         }
 
-        print(computed_stocks)
+    print(computed_stocks)
