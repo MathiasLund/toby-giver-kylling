@@ -197,7 +197,7 @@ std_array = []
 portfolio_array = []
 returns_array = []
 
-for i_p in range(0,100):
+for i_p in range(0,5):
     df = pd.DataFrame(data=d)
     used_stocks = []
 
@@ -341,6 +341,9 @@ for i_p in range(0,100):
 print("irr_array", irr_array)
 np_irr = np.array(irr_array)
 print("irr_mean", np.mean(np_irr))
+
+df_irr = pd.DataFrame(np_irr)
+df_irr.to_csv('irr.csv')
 
 print("std_array", std_array)
 np_std = np.array(std_array)
