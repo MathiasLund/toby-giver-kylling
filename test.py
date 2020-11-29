@@ -5,26 +5,26 @@ import numpy as np
 
 d = {
     0: {
-        'aktie1': 0.1,
-        'aktie3': 0.3,
-        'aktie4': 0.3,
-        'aktie5': 0.3,
-        'aktie6': 0.3,
-        'aktie7': 0.3,
-        'aktie8': 0.3,
-        'aktie9': 0.1,
-        'aktie10': 0.3,
-        'aktie11': 0.3,
-        'aktie12': 0.3,
-        'aktie13': 0.3,
-        'aktie14': 0.3,
-        'aktie15': 0.3,
-        'aktie16': 0.3,
-        'aktie17': 0.3,
-        'aktie18': 0.3,
-        'aktie19': 0.3,
-        'aktie20': 0.3,
-        'aktie21': 0.3,
+        'aktie1': -0.1,
+        'aktie3': -0.3,
+        'aktie4': -0.3,
+        'aktie5': -0.3,
+        'aktie6': -0.3,
+        'aktie7': -0.3,
+        'aktie8': -0.3,
+        'aktie9': -0.1,
+        'aktie10': -0.3,
+        'aktie11': -0.3,
+        'aktie12': -0.3,
+        'aktie13': -0.3,
+        'aktie14': -0.3,
+        'aktie15': -0.3,
+        'aktie16': -0.3,
+        'aktie17': -0.3,
+        'aktie18': -0.3,
+        'aktie19': -0.3,
+        'aktie20': -0.3,
+        'aktie21': -0.3,
     },
     1: {
         'aktie1': 0.1,
@@ -71,26 +71,26 @@ d = {
         'aktie21': 0.3,
     },
     3: {
-        'aktie1': 0.1,
-        'aktie3': 0.3,
-        'aktie4': 0.3,
-        'aktie5': 0.3,
-        'aktie6': 0.3,
-        'aktie7': 0.3,
-        'aktie8': 0.3,
-        'aktie9': 0.1,
-        'aktie10': 0.3,
-        'aktie11': 0.3,
-        'aktie12': 0.3,
-        'aktie13': 0.3,
-        'aktie14': 0.3,
-        'aktie15': 0.3,
-        'aktie16': 0.3,
-        'aktie17': 0.3,
-        'aktie18': 0.3,
-        'aktie19': 0.3,
-        'aktie20': 0.3,
-        'aktie21': 0.3,
+        'aktie1': -0.1,
+        'aktie3': -0.3,
+        'aktie4': -0.3,
+        'aktie5': -0.3,
+        'aktie6': -0.3,
+        'aktie7': -0.3,
+        'aktie8': -0.3,
+        'aktie9': -0.1,
+        'aktie10': -0.3,
+        'aktie11': -0.3,
+        'aktie12': -0.3,
+        'aktie13': -0.3,
+        'aktie14': -0.3,
+        'aktie15': -0.3,
+        'aktie16': -0.3,
+        'aktie17': -0.3,
+        'aktie18': -0.3,
+        'aktie19': -0.3,
+        'aktie20': -0.3,
+        'aktie21': -0.3,
     },
     4: {
         'aktie1': 0.1,
@@ -185,8 +185,9 @@ d = {
 irr_array = []
 std_array = []
 portfolio_array = []
+returns_array = []
 
-for i in range(0,10):
+for i_p in range(0,100):
     df = pd.DataFrame(data=d)
     used_stocks = []
 
@@ -271,51 +272,60 @@ for i in range(0,10):
                 except IndexError:
                     print("")
 
-    stock_returns = {}
+    stock_values = {}
     for period in stocks_final:
         sum = 0
         for stock in stocks_final[period]:
             sum += stock['value']
 
-        stock_returns[period] = sum
+        stock_values[period] = sum
 
-    stock_values = {}
-    for i in stock_returns:
-        val = stock_returns[i]
-        #print("period", i)
+    stock_returns = {}
+    for i in stock_values:
+        val = stock_values[i]
 
         if i == 0:
             val = (val / 20000) - 1
         else:
-            val = (val - 20000) / stock_returns[i-1] - 1
+            val = (val - 20000) / stock_values[i-1] - 1
 
-        stock_values[i] = val
+        stock_returns[i] = val
 
-    print("portfolio-returns", stock_values)
-    print("portfolio-value", stock_returns)
+
+    period_stopped = 7
+    period_returns = []
+    for i in stock_returns:
+        val = stock_returns[i]
+        period_returns.append(val)
+        if val < 0 and i > 0 and period_returns[i-1] < 0:
+            period_stopped = i
+
+    print("portfolio-returns", stock_returns)
+    print("portfolio-value", stock_values)
 
     periods = []
-    for period in stocks_final:
+    for period in range(0, period_stopped+1):
         periods.append(-20000)
 
-    cashFlows = periods + [stock_returns[7]]
+    cashFlows = periods + [stock_values[period_stopped]]
 
     irr = np.irr(cashFlows)
     print("irr", irr)
 
-    irr_array.append(irr)
+    stock_returns_array = []
+    for val in stock_returns:
+        if val <= period_stopped:
+            stock_returns_array.append(stock_returns[val])
 
-    stock_values_array = []
-    for val in stock_values:
-        stock_values_array.append(stock_values[val])
-
+    print("period stopped", period_stopped)
     # STD
     print("std")
-    std = np.std(stock_values_array)
+    std = np.std(stock_returns_array)
     print(std)
-    std_array.append(std)
 
-    portfolio_array.append(stock_returns[7])
+    irr_array.append(irr)
+    std_array.append(std)
+    portfolio_array.append(stock_values[period_stopped])
 
 
 print("irr_array", irr_array)
