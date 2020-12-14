@@ -2,6 +2,7 @@ import pandas as pd
 import random
 import math
 import numpy as np
+import operator
 
 d = {
     0: {
@@ -61,7 +62,7 @@ d = {
         'aktie11': 0.3,
         'aktie12': 0.3,
         'aktie13': 0.3,
-        'aktie14': 0.3,
+        'aktie14': 0.4,
         'aktie15': 0.3,
         'aktie16': 0.3,
         'aktie17': 0.3,
@@ -201,14 +202,26 @@ for i_p in range(0,5):
     df = pd.DataFrame(data=d)
     used_stocks = []
 
-    def get_random_stock(period):
-        n = random.randint(0, len(period.index.tolist())-1)
+    def get_random_stock(period, test):
+        if test == 0:
+            n = random.randint(0, len(period.index.tolist())-1)
+        else:
+            n_item = max(d[test-1].items(), key=operator.itemgetter(1))[0]
+            n = list(d[test].keys()).index(n_item)
+
+            stocks = period.index.tolist()
+            stock_name = stocks[n]
+            random_stock = period[stock_name]
+
+            if stock_name in used_stocks:
+                n = random.randint(0, len(period.index.tolist())-1)
+
         stocks = period.index.tolist()
         stock_name = stocks[n]
         random_stock = period[stock_name]
 
         if math.isnan(random_stock) or stock_name in used_stocks:
-            return get_random_stock(period)
+            return get_random_stock(period, test)
 
         used_stocks.append(stock_name)
 
@@ -228,7 +241,7 @@ for i_p in range(0,5):
     stocks_final = {}
 
     for i in range(0, 8):
-        random_stock = get_random_stock(df[i])
+        random_stock = get_random_stock(df[i], i)
         stocks_test[i].append(random_stock)
 
     stocks = []
